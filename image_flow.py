@@ -101,7 +101,7 @@ class SegDirectoryIterator(Iterator):
                  data_format='default', class_mode='sparse',
                  batch_size=1, shuffle=True, seed=None,
                  save_to_dir=None, save_prefix='', save_format='jpeg',
-                 loss_shape=None):
+                 loss_shape=None, label_classes=None):
         if data_format == 'default':
             data_format = K.image_data_format()
         self.data_paths = data_paths
@@ -130,6 +130,7 @@ class SegDirectoryIterator(Iterator):
         self.n = len(self.data_paths)
         self.shuffle = True
         self.batch_size = batch_size
+        self.label_classes = label_classes
 
         if (self.label_suffix == '.npy') or (self.label_suffix == 'npy'):
             self.label_file_format = 'npy'
@@ -172,6 +173,7 @@ class SegDirectoryIterator(Iterator):
         # build lists for data files and label files
         self.data_files = data_paths
         self.label_files = label_paths
+        self.label_classes = label_classes
 
     def _set_index_array(self):
         self.index_array = np.arange(self.n)
@@ -220,6 +222,7 @@ class SegDirectoryIterator(Iterator):
         for i, j in enumerate(index_array):
             data_file = self.data_files[j]
             label_file = self.label_files[j]
+
             img_file_format = 'img'
             img = load_img(data_file,
                            grayscale=grayscale, target_size=None)
@@ -278,6 +281,9 @@ class SegDirectoryIterator(Iterator):
 
             if self.loss_shape is not None:
                 y = np.reshape(y, self.loss_shape)
+            
+            if self.label_classes:
+                y = np.where(y > 0, self.label_classes[j], 0)
 
             batch_x[i] = x
             batch_y[i] = y
@@ -393,6 +399,10 @@ class SegDirectoryIterator(Iterator):
             if self.loss_shape is not None:
                 y = np.reshape(y, self.loss_shape)
 
+            # converts 1's to the specified class label
+            if self.label_classes:
+                y = np.where(y > 0, self.label_classes[j], 0)
+
             batch_x[i] = x
             batch_y[i] = y
         # optionally save augmented images to disk for debugging purposes
@@ -499,7 +509,7 @@ class SegDataGenerator(object):
                             class_mode='sparse',
                             batch_size=32, shuffle=True, seed=None,
                             save_to_dir=None, save_prefix='', save_format='jpeg',
-                            loss_shape=None):
+                            loss_shape=None, label_classes=None):
 
         if self.crop_mode == 'random' or self.crop_mode == 'center':
             target_size = self.crop_size
@@ -514,7 +524,7 @@ class SegDataGenerator(object):
             batch_size=batch_size, shuffle=shuffle, seed=seed,
             save_to_dir=save_to_dir, save_prefix=save_prefix,
             save_format=save_format,
-            loss_shape=loss_shape)
+            loss_shape=loss_shape, label_classes=label_classes)
 
     def standardize(self, x):
         if self.rescale:
