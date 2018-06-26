@@ -101,7 +101,7 @@ class SegDirectoryIterator(Iterator):
                  data_format='default', class_mode='sparse',
                  batch_size=1, shuffle=True, seed=None,
                  save_to_dir=None, save_prefix='', save_format='jpeg',
-                 loss_shape=None, label_classes=None, seed=None):
+                 loss_shape=None, label_classes=None):
         if data_format == 'default':
             data_format = K.image_data_format()
         self.data_paths = data_paths
@@ -131,6 +131,7 @@ class SegDirectoryIterator(Iterator):
         self.shuffle = True
         self.batch_size = batch_size
         self.label_classes = label_classes
+        self.seed = seed
 
         if (self.label_suffix == '.npy') or (self.label_suffix == 'npy'):
             self.label_file_format = 'npy'
