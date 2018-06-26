@@ -101,7 +101,7 @@ class SegDirectoryIterator(Iterator):
                  data_format='default', class_mode='sparse',
                  batch_size=1, shuffle=True, seed=None,
                  save_to_dir=None, save_prefix='', save_format='jpeg',
-                 loss_shape=None, label_classes=None):
+                 loss_shape=None, label_classes=None, seed=None):
         if data_format == 'default':
             data_format = K.image_data_format()
         self.data_paths = data_paths
