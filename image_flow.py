@@ -229,7 +229,8 @@ class SegDirectoryIterator(Iterator):
                            grayscale=grayscale, target_size=None)
             label_filepath = label_file
 
-            if self.label_file_format == 'npy':
+            # if self.label_file_format == 'npy':
+            if label_filepath.endswith("npy"):
                 y = np.load(label_filepath)
             else:
                 label = Image.open(label_filepath)
@@ -240,7 +241,7 @@ class SegDirectoryIterator(Iterator):
             if self.target_size:
                 if self.crop_mode != 'none':
                     x = img_to_array(img, data_format=self.data_format)
-                    if self.label_file_format is not 'npy':
+                    if not label_filepath.endswith("npy"):
                         y = img_to_array(
                             label, data_format=self.data_format).astype(int)
                     img_w, img_h = img.size
@@ -261,7 +262,7 @@ class SegDirectoryIterator(Iterator):
                     x = img_to_array(img.resize((self.target_size[1], self.target_size[0]),
                                                 Image.BILINEAR),
                                      data_format=self.data_format)
-                    if self.label_file_format is not 'npy':
+                    if not label_filepath.endswith("npy"):
                         y = img_to_array(label.resize((self.target_size[1], self.target_size[
                                          0]), Image.NEAREST), data_format=self.data_format).astype(int)
                     else:
@@ -346,7 +347,7 @@ class SegDirectoryIterator(Iterator):
                            grayscale=grayscale, target_size=None)
             label_filepath = label_file
 
-            if self.label_file_format == 'npy':
+            if label_filepath.endswith("npy"):
                 y = np.load(label_filepath)
             else:
                 label = Image.open(label_filepath)
@@ -357,7 +358,7 @@ class SegDirectoryIterator(Iterator):
             if self.target_size:
                 if self.crop_mode != 'none':
                     x = img_to_array(img, data_format=self.data_format)
-                    if self.label_file_format is not 'npy':
+                    if not label_filepath.endswith("npy"):
                         y = img_to_array(
                             label, data_format=self.data_format).astype(int)
                     img_w, img_h = img.size
@@ -378,7 +379,7 @@ class SegDirectoryIterator(Iterator):
                     x = img_to_array(img.resize((self.target_size[1], self.target_size[0]),
                                                 Image.BILINEAR),
                                      data_format=self.data_format)
-                    if self.label_file_format is not 'npy':
+                    if not label_filepath.endswith("npy"):
                         y = img_to_array(label.resize((self.target_size[1], self.target_size[
                                          0]), Image.NEAREST), data_format=self.data_format).astype(int)
                     else:
