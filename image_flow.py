@@ -101,7 +101,7 @@ class SegDirectoryIterator(Iterator):
                  data_format='default', class_mode='sparse',
                  batch_size=1, shuffle=True, seed=None,
                  save_to_dir=None, save_prefix='', save_format='jpeg',
-                 loss_shape=None, label_classes=None):
+                 loss_shape=None, label_classes=None, num_classes = None):
         if data_format == 'default':
             data_format = K.image_data_format()
         self.data_paths = data_paths
@@ -114,6 +114,7 @@ class SegDirectoryIterator(Iterator):
         self.crop_mode = crop_mode
         self.label_cval = label_cval
         self.pad_size = pad_size
+        self.num_classes = num_classes
         if color_mode not in {'rgb', 'grayscale'}:
             raise ValueError('Invalid color mode:', color_mode,
                              '; expected "rgb" or "grayscale".')
@@ -310,11 +311,9 @@ class SegDirectoryIterator(Iterator):
         if self.class_mode == 'sparse':
             return batch_x, batch_y
         elif self.class_mode == 'categorical':
-            if self.label_classes:
-                n_class = len(np.unique(self.label_classes))
-            else:
-                n_class = len(np.unique(batch_y))
-            return batch_x, to_categorical(batch_y, num_classes=n_class)
+            if not self.num_classes:
+                self.num_classes =  len(np.unique(batch_y))
+            return batch_x, to_categorical(batch_y, num_classes=self.num_classes)
         else:
             return batch_x
 
