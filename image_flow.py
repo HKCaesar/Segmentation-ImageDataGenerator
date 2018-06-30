@@ -310,8 +310,7 @@ class SegDirectoryIterator(Iterator):
         if self.class_mode == 'sparse':
             return batch_x, batch_y
         elif self.class_mode == 'categorical':
-            n_class = len(np.unique(label_classes) if label_classes else len(np.unique(batch_y))
-            
+            n_class = len(np.unique(label_classes)) if label_classes else len(np.unique(batch_y))
             return batch_x, to_categorical(batch_y, num_classes=n_class)
         else:
             return batch_x
