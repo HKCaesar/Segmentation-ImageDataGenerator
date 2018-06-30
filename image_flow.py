@@ -4,7 +4,7 @@ from keras import backend as K
 from PIL import Image
 import numpy as np
 import os
-
+from keras.utils import to_categorical
 
 def center_crop(x, center_crop_size, data_format, **kwargs):
     if data_format == 'channels_first':
@@ -158,10 +158,10 @@ class SegDirectoryIterator(Iterator):
         else:
             self.image_shape = None
             self.label_shape = None
-        if class_mode not in {'sparse', None}:
+        if class_mode not in {'sparse', 'categorical', None}:
             raise ValueError('Invalid class_mode:', class_mode,
                              '; expected one of '
-                             '"sparse", or None.')
+                             '"sparse", "categorical", or None.')
         self.class_mode = class_mode
         if save_to_dir:
             self.palette = None
@@ -309,6 +309,9 @@ class SegDirectoryIterator(Iterator):
         batch_x = preprocess_input(batch_x)
         if self.class_mode == 'sparse':
             return batch_x, batch_y
+        elif self.class_mode == 'categorical':
+            n_class = len(np.unique(label_classes) if label_classes else: len(np.unique(batch_y))
+            return batch_x, to_categorical(batch_y, num_classes=n_class)
         else:
             return batch_x
 
@@ -427,6 +430,9 @@ class SegDirectoryIterator(Iterator):
         batch_x = preprocess_input(batch_x)
         if self.class_mode == 'sparse':
             return batch_x, batch_y
+        elif self.class_mode == 'categorical':
+            n_class = len(np.unique(label_classes) if label_classes else: len(np.unique(batch_y))
+            return batch_x, to_categorical(batch_y, num_classes=n_class)
         else:
             return batch_x
 
